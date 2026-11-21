@@ -2,11 +2,13 @@ package com.scc.ui;
 
 import com.scc.model.User;
 import java.util.Scanner;
+import com.scc.dao.ActivityLogDao;
 
 public class CustomerMenu {
 
     private final Scanner scanner;
     private final User user;
+    private final ActivityLogDao logDao = new ActivityLogDao();
 
     private final String[] equipment = {
             "Basketball",
@@ -116,11 +118,32 @@ public class CustomerMenu {
         String confirm = scanner.nextLine().trim();
 
         if (confirm.equalsIgnoreCase("Y")) {
-            System.out.println("Rental confirmed!");
-            System.out.println(
-                    "Note: This demonstration does not save rental transactions yet."
+
+            logDao.logAction(
+                    user.getUserId(),
+                    "RENTAL_CONFIRMED",
+                    user.getFullName()
+                            + " confirmed rental of "
+                            + equipment[index]
+                            + " for "
+                            + days
+                            + " day(s). Total: PHP "
+                            + String.format("%.2f", total)
             );
+
+            System.out.println("Rental confirmed!");
+
+            System.out.println(
+                    "Activity successfully recorded in the audit logs."
+            );
+
+            System.out.println(
+                    "Note: Rental transactions are not yet saved "
+                            + "in a separate rental database table."
+            );
+
         } else {
+
             System.out.println("Rental cancelled.");
         }
     }

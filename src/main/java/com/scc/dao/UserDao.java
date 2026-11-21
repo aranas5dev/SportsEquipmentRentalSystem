@@ -11,6 +11,10 @@ import java.util.List;
 
 public class UserDao {
 
+
+    private final ActivityLogDao logDao = new ActivityLogDao();
+
+
     private User mapUser(ResultSet rs) throws SQLException {
         return new User(
                 rs.getInt("user_id"),

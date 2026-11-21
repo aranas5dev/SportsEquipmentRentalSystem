@@ -2,12 +2,16 @@ package com.scc.ui;
 
 import com.scc.dao.UserDao;
 import com.scc.model.User;
+import com.scc.dao.ActivityLogDao;
+import com.scc.dao.ActivityLogDao;
 
 import java.util.Scanner;
 
 public class Authentication {
+
     private final Scanner scanner = new Scanner(System.in);
     private final UserDao userDao = new UserDao();
+    private final ActivityLogDao logDao = new ActivityLogDao();
 
     public void start() {
         int choice;
@@ -47,6 +51,13 @@ public class Authentication {
             System.out.println("Login unsuccessful.");
             return;
         }
+
+// RECORD SUCCESSFUL LOGIN
+        logDao.logAction(
+                user.getUserId(),
+                "USER_LOGIN",
+                user.getFullName() + " successfully logged into the system."
+        );
 
         System.out.println(
                 "Login successful. Welcome, " + user.getFullName() + "!"
@@ -97,9 +108,22 @@ public class Authentication {
                 contact, email, address, "Customer", "PENDING");
 
         if (userDao.registerUser(user)) {
-            System.out.println("Registration submitted. Your account is PENDING approval.");
+
+            logDao.logAction(
+                    0,
+                    "USER_REGISTERED",
+                    "New customer account registered: " + username
+            );
+
+            System.out.println(
+                    "Registration submitted. Your account is PENDING approval."
+            );
+
         } else {
-            System.out.println("Registration failed. Username may already exist.");
+
+            System.out.println(
+                    "Registration failed. Username may already exist."
+            );
         }
     }
 
